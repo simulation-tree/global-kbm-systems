@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<IsAotCompatible>True</IsAotCompatible>
+		<IsTrimmable>True</IsTrimmable>
+		<WarningLevel>8</WarningLevel>
+		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+		<Title>Global Keyboard & Mouse Systems</Title>
+		<Authors>popcron</Authors>
+		<Company>game-simulations</Company>
+		<RepositoryUrl>https://github.com/game-simulations/global-kbm-systems</RepositoryUrl>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="SharpHook" Version="5.3.8" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\input-devices\source\InputDevices.csproj" />
+		<ProjectReference Include="..\..\simulation\core\Simulation.Core.csproj" />
+		<ProjectReference Include="..\..\simulation\generator\Simulation.Generator.csproj">
+			<OutputItemType>Analyzer</OutputItemType>
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		</ProjectReference>
+	</ItemGroup>
+
+</Project>
