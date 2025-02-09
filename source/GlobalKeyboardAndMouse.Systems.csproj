@@ -9,7 +9,7 @@
 		<IsTrimmable>True</IsTrimmable>
 		<WarningLevel>8</WarningLevel>
 		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-		<Title>Global Keyboard & Mouse Systems</Title>
+		<Title>Global Keyboard and Mouse Systems</Title>
 		<Authors>popcron</Authors>
 		<Company>game-simulations</Company>
 		<RepositoryUrl>https://github.com/game-simulations/global-kbm-systems</RepositoryUrl>
