@@ -168,7 +168,10 @@ namespace InputDevices.Systems
 
                 if (globalMouseMoved)
                 {
-                    mouse.Position = globalMousePosition;
+                    ref Vector2 currentPosition = ref mouse.Position;
+                    Vector2 delta = globalMousePosition - currentPosition;
+                    mouse.Delta = delta;
+                    currentPosition = globalMousePosition;
                     mouseUpdated = true;
                 }
 
