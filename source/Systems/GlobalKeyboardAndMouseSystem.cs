@@ -64,13 +64,13 @@ namespace InputDevices.Systems
         {
             globalKeyboardEntity = default;
             globalMouseEntity = default;
-            ComponentType keyboardType = world.Schema.GetComponent<IsKeyboard>();
-            ComponentType mouseType = world.Schema.GetComponent<IsMouse>();
-            TagType globalTagType = world.Schema.GetTag<IsGlobal>();
+            ComponentType keyboardType = world.Schema.GetComponentType<IsKeyboard>();
+            ComponentType mouseType = world.Schema.GetComponentType<IsMouse>();
+            TagType globalTagType = world.Schema.GetTagType<IsGlobal>();
             foreach (Chunk chunk in world.Chunks)
             {
                 Definition definition = chunk.Definition;
-                if (definition.Contains(keyboardType) && definition.Contains(globalTagType))
+                if (definition.ContainsComponent(keyboardType) && definition.ContainsTag(globalTagType))
                 {
                     if (chunk.Count > 1)
                     {
@@ -84,7 +84,7 @@ namespace InputDevices.Systems
             foreach (Chunk chunk in world.Chunks)
             {
                 Definition definition = chunk.Definition;
-                if (definition.Contains(mouseType) && definition.Contains(globalTagType))
+                if (definition.ContainsComponent(mouseType) && definition.ContainsTag(globalTagType))
                 {
                     if (chunk.Count > 1)
                     {
