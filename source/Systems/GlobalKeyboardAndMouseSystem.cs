@@ -125,7 +125,7 @@ namespace InputDevices.Systems
             {
                 Keyboard keyboard = new Entity(world, globalKeyboardEntity).As<Keyboard>();
                 bool keyboardUpdated = false;
-                for (uint i = 0; i < KeyboardState.MaxKeyCount; i++)
+                for (int i = 0; i < KeyboardState.MaxKeyCount; i++)
                 {
                     bool next = globalCurrentKeyboard[i];
                     bool previous = globalLastKeyboard[i];
@@ -199,9 +199,9 @@ namespace InputDevices.Systems
             if (simulator != default && e.Data.KeyCode != KeyCode.VcUndefined)
             {
                 Keyboard.Button control = GetControl(e.Data.KeyCode);
-                if (!globalCurrentKeyboard[(uint)control])
+                if (!globalCurrentKeyboard[(int)control])
                 {
-                    globalCurrentKeyboard[(uint)control] = true;
+                    globalCurrentKeyboard[(int)control] = true;
                 }
             }
         }
@@ -211,9 +211,9 @@ namespace InputDevices.Systems
             if (simulator != default && e.Data.KeyCode != KeyCode.VcUndefined)
             {
                 Keyboard.Button control = GetControl(e.Data.KeyCode);
-                if (globalCurrentKeyboard[(uint)control])
+                if (globalCurrentKeyboard[(int)control])
                 {
-                    globalCurrentKeyboard[(uint)control] = false;
+                    globalCurrentKeyboard[(int)control] = false;
                 }
             }
         }
