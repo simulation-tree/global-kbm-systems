@@ -25,12 +25,7 @@ namespace InputDevices.Systems
         private uint globalKeyboardEntity;
         private uint globalMouseEntity;
 
-        [Obsolete("Default constructor is not supported", true)]
-        public GlobalKeyboardAndMouseSystem() : this(default)
-        {
-        }
-
-        public GlobalKeyboardAndMouseSystem(Simulator simulator)
+        private GlobalKeyboardAndMouseSystem(Simulator simulator)
         {
             this.simulator = simulator;
         }
@@ -45,6 +40,10 @@ namespace InputDevices.Systems
 
         readonly void ISystem.Start(in SystemContext context, in World world)
         {
+            if (context.World == world)
+            {
+                context.Write(new GlobalKeyboardAndMouseSystem(context.Simulator));
+            }
         }
 
         void ISystem.Update(in SystemContext context, in World world, in TimeSpan delta)
