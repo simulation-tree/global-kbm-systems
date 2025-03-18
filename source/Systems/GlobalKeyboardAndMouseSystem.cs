@@ -25,48 +25,45 @@ namespace InputDevices.Systems
         private uint globalKeyboardEntity;
         private uint globalMouseEntity;
 
-        void ISystem.Start(in SystemContainer systemContainer, in World world)
+        [Obsolete("Default constructor is not supported", true)]
+        public GlobalKeyboardAndMouseSystem() : this(default)
         {
-            if (systemContainer.World == world)
-            {
-                systemContainer.Write(new GlobalKeyboardAndMouseSystem(systemContainer.simulator));
-            }
         }
 
-        void ISystem.Update(in SystemContainer systemContainer, in World world, in TimeSpan delta)
-        {
-            Update(world);
-        }
-
-        unsafe void ISystem.Finish(in SystemContainer systemContainer, in World world)
-        {
-            if (systemContainer.World == world)
-            {
-                if (kbmHook != default)
-                {
-                    kbmHook.Dispose();
-                }
-            }
-        }
-
-        private GlobalKeyboardAndMouseSystem(Simulator simulator)
+        public GlobalKeyboardAndMouseSystem(Simulator simulator)
         {
             this.simulator = simulator;
         }
 
-        private void Update(World world)
+        public readonly void Dispose()
+        {
+            if (kbmHook != default)
+            {
+                kbmHook.Dispose();
+            }
+        }
+
+        readonly void ISystem.Start(in SystemContext context, in World world)
+        {
+        }
+
+        void ISystem.Update(in SystemContext context, in World world, in TimeSpan delta)
         {
             FindGlobalDevices(world);
             UpdateStates(world);
+        }
+
+        readonly void ISystem.Finish(in SystemContext context, in World world)
+        {
         }
 
         private void FindGlobalDevices(World world)
         {
             globalKeyboardEntity = default;
             globalMouseEntity = default;
-            ComponentType keyboardType = world.Schema.GetComponentType<IsKeyboard>();
-            ComponentType mouseType = world.Schema.GetComponentType<IsMouse>();
-            TagType globalTagType = world.Schema.GetTagType<IsGlobal>();
+            int keyboardType = world.Schema.GetComponentType<IsKeyboard>();
+            int mouseType = world.Schema.GetComponentType<IsMouse>();
+            int globalTagType = world.Schema.GetTagType<IsGlobal>();
             foreach (Chunk chunk in world.Chunks)
             {
                 Definition definition = chunk.Definition;
