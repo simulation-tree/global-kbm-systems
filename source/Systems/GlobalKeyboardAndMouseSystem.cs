@@ -40,7 +40,7 @@ namespace InputDevices.Systems
 
         readonly void ISystem.Start(in SystemContext context, in World world)
         {
-            if (context.World == world)
+            if (context.IsSimulatorWorld(world))
             {
                 context.Write(new GlobalKeyboardAndMouseSystem(context.Simulator));
             }
