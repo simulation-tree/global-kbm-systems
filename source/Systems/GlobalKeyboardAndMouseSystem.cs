@@ -9,7 +9,7 @@ using Worlds;
 
 namespace InputDevices.Systems
 {
-    public partial struct GlobalKeyboardAndMouseSystem : ISystem
+    public class GlobalKeyboardAndMouseSystem : ISystem, IDisposable
     {
         private static bool globalMouseMoved;
         private static bool globalMouseScrolled;
@@ -20,40 +20,23 @@ namespace InputDevices.Systems
         private static Vector2 globalMousePosition;
         private static Vector2 globalMouseScroll;
 
-        private readonly Simulator simulator;
-        private GlobalHook kbmHook;
+        private TaskPoolGlobalHook? kbmHook;
         private uint globalKeyboardEntity;
         private uint globalMouseEntity;
 
-        private GlobalKeyboardAndMouseSystem(Simulator simulator)
+        public void Dispose()
         {
-            this.simulator = simulator;
-        }
-
-        public readonly void Dispose()
-        {
-            if (kbmHook != default)
+            if (kbmHook is not null)
             {
                 kbmHook.Dispose();
             }
         }
 
-        readonly void ISystem.Start(in SystemContext context, in World world)
+        void ISystem.Update(Simulator simulator, double deltaTime)
         {
-            if (context.IsSimulatorWorld(world))
-            {
-                context.Write(new GlobalKeyboardAndMouseSystem(context.Simulator));
-            }
-        }
-
-        void ISystem.Update(in SystemContext context, in World world, in TimeSpan delta)
-        {
+            World world = simulator.world;
             FindGlobalDevices(world);
             UpdateStates(world);
-        }
-
-        readonly void ISystem.Finish(in SystemContext context, in World world)
-        {
         }
 
         private void FindGlobalDevices(World world)
@@ -91,17 +74,17 @@ namespace InputDevices.Systems
                 }
             }
 
-            if (kbmHook == default)
+            if (kbmHook is null)
             {
                 if (globalKeyboardEntity != default || globalMouseEntity != default)
                 {
-                    kbmHook = new(InitializeGlobalHook());
+                    kbmHook = InitializeGlobalHook();
                     Trace.WriteLine("Global keyboard and mouse hook initialized");
                 }
             }
         }
 
-        private readonly TaskPoolGlobalHook InitializeGlobalHook()
+        private TaskPoolGlobalHook InitializeGlobalHook()
         {
             TaskPoolGlobalHook kbmHook = new();
             kbmHook.KeyPressed += OnKeyPressed;
@@ -115,11 +98,11 @@ namespace InputDevices.Systems
             return kbmHook;
         }
 
-        private readonly void UpdateStates(World world)
+        private void UpdateStates(World world)
         {
             if (globalKeyboardEntity != default)
             {
-                Keyboard keyboard = new Entity(world, globalKeyboardEntity).As<Keyboard>();
+                Keyboard keyboard = Entity.Get<Keyboard>(world, globalKeyboardEntity);
                 bool keyboardUpdated = false;
                 for (int i = 0; i < KeyboardState.MaxKeyCount; i++)
                 {
@@ -190,9 +173,9 @@ namespace InputDevices.Systems
             }
         }
 
-        private readonly void OnKeyPressed(object? sender, KeyboardHookEventArgs e)
+        private void OnKeyPressed(object? sender, KeyboardHookEventArgs e)
         {
-            if (simulator != default && e.Data.KeyCode != KeyCode.VcUndefined)
+            if (e.Data.KeyCode != KeyCode.VcUndefined)
             {
                 Keyboard.Button control = GetControl(e.Data.KeyCode);
                 if (!globalCurrentKeyboard[(int)control])
@@ -202,9 +185,9 @@ namespace InputDevices.Systems
             }
         }
 
-        private readonly void OnKeyReleased(object? sender, KeyboardHookEventArgs e)
+        private void OnKeyReleased(object? sender, KeyboardHookEventArgs e)
         {
-            if (simulator != default && e.Data.KeyCode != KeyCode.VcUndefined)
+            if (e.Data.KeyCode != KeyCode.VcUndefined)
             {
                 Keyboard.Button control = GetControl(e.Data.KeyCode);
                 if (globalCurrentKeyboard[(int)control])
@@ -214,55 +197,40 @@ namespace InputDevices.Systems
             }
         }
 
-        private readonly void OnMousePressed(object? sender, MouseHookEventArgs e)
+        private void OnMousePressed(object? sender, MouseHookEventArgs e)
         {
-            if (simulator != default)
+            uint control = (uint)e.Data.Button;
+            if (!globalCurrentMouse[control])
             {
-                uint control = (uint)e.Data.Button;
-                if (!globalCurrentMouse[control])
-                {
-                    globalCurrentMouse[control] = true;
-                }
+                globalCurrentMouse[control] = true;
             }
         }
 
-        private readonly void OnMouseReleased(object? sender, MouseHookEventArgs e)
+        private void OnMouseReleased(object? sender, MouseHookEventArgs e)
         {
-            if (simulator != default)
+            uint control = (uint)e.Data.Button;
+            if (globalCurrentMouse[control])
             {
-                uint control = (uint)e.Data.Button;
-                if (globalCurrentMouse[control])
-                {
-                    globalCurrentMouse[control] = false;
-                }
+                globalCurrentMouse[control] = false;
             }
         }
 
-        private readonly void OnMouseDragged(object? sender, MouseHookEventArgs e)
+        private void OnMouseDragged(object? sender, MouseHookEventArgs e)
         {
-            if (simulator != default)
-            {
-                globalMousePosition = new Vector2(e.Data.X, e.Data.Y);
-                globalMouseMoved = true;
-            }
+            globalMousePosition = new Vector2(e.Data.X, e.Data.Y);
+            globalMouseMoved = true;
         }
 
-        private readonly void OnMouseMoved(object? sender, MouseHookEventArgs e)
+        private void OnMouseMoved(object? sender, MouseHookEventArgs e)
         {
-            if (simulator != default)
-            {
-                globalMousePosition = new Vector2(e.Data.X, e.Data.Y);
-                globalMouseMoved = true;
-            }
+            globalMousePosition = new Vector2(e.Data.X, e.Data.Y);
+            globalMouseMoved = true;
         }
 
-        private readonly void OnMouseWheel(object? sender, MouseWheelHookEventArgs e)
+        private void OnMouseWheel(object? sender, MouseWheelHookEventArgs e)
         {
-            if (simulator != default)
-            {
-                globalMouseScroll = new Vector2(e.Data.X, e.Data.Y);
-                globalMouseScrolled = true;
-            }
+            globalMouseScroll = new Vector2(e.Data.X, e.Data.Y);
+            globalMouseScrolled = true;
         }
 
         private static Keyboard.Button GetControl(KeyCode keyCode)
