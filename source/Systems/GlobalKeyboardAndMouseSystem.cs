@@ -1,4 +1,5 @@
 ﻿using InputDevices.Components;
+using InputDevices.Messages;
 using SharpHook;
 using SharpHook.Native;
 using Simulation;
@@ -9,7 +10,7 @@ using Worlds;
 
 namespace InputDevices.Systems
 {
-    public class GlobalKeyboardAndMouseSystem : ISystem, IDisposable
+    public partial class GlobalKeyboardAndMouseSystem : SystemBase, IListener<InputUpdate>
     {
         private static bool globalMouseMoved;
         private static bool globalMouseScrolled;
@@ -20,26 +21,28 @@ namespace InputDevices.Systems
         private static Vector2 globalMousePosition;
         private static Vector2 globalMouseScroll;
 
-        private double time;
+        private readonly World world;
         private readonly int keyboardType;
         private readonly int mouseType;
         private readonly int globalTagType;
         private readonly int timestampType;
+        private double time;
 
         private TaskPoolGlobalHook? kbmHook;
         private uint globalKeyboardEntity;
         private uint globalMouseEntity;
 
-        public GlobalKeyboardAndMouseSystem(Simulator simulator)
+        public GlobalKeyboardAndMouseSystem(Simulator simulator, World world) : base(simulator)
         {
-            Schema schema = simulator.world.Schema;
+            this.world = world;
+            Schema schema = world.Schema;
             keyboardType = schema.GetComponentType<IsKeyboard>();
             mouseType = schema.GetComponentType<IsMouse>();
             globalTagType = schema.GetTagType<IsGlobal>();
             timestampType = schema.GetComponentType<LastDeviceUpdateTime>();
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             if (kbmHook is not null)
             {
@@ -47,15 +50,14 @@ namespace InputDevices.Systems
             }
         }
 
-        void ISystem.Update(Simulator simulator, double deltaTime)
+        void IListener<InputUpdate>.Receive(ref InputUpdate message)
         {
-            time += deltaTime;
-            World world = simulator.world;
-            FindGlobalDevices(world);
-            UpdateStates(world);
+            time += message.deltaTime;
+            FindGlobalDevices();
+            UpdateStates();
         }
 
-        private void FindGlobalDevices(World world)
+        private void FindGlobalDevices()
         {
             globalKeyboardEntity = default;
             globalMouseEntity = default;
@@ -110,7 +112,7 @@ namespace InputDevices.Systems
             return kbmHook;
         }
 
-        private void UpdateStates(World world)
+        private void UpdateStates()
         {
             if (globalKeyboardEntity != default)
             {
