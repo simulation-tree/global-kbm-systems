@@ -1,7 +1,7 @@
 ﻿using InputDevices.Components;
 using InputDevices.Messages;
 using SharpHook;
-using SharpHook.Native;
+using SharpHook.Data;
 using Simulation;
 using System;
 using System.Diagnostics;
