@@ -3,7 +3,7 @@
 
     <ItemGroup>
         <Reference Include="GlobalKeyboardAndMouse.Systems">
-            <HintPath>$(MSBuildThisFileDirectory)..\lib\net9.0\$(Configuration)\GlobalKeyboardAndMouse.Systems.dll</HintPath>
+            <HintPath>$(MSBuildThisFileDirectory)..\lib\$(TargetFramework)\$(Configuration)\GlobalKeyboardAndMouse.Systems.dll</HintPath>
         </Reference>
     </ItemGroup>
 
