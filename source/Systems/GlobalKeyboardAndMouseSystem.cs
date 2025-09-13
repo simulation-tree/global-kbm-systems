@@ -61,12 +61,13 @@ namespace InputDevices.Systems
         {
             globalKeyboardEntity = default;
             globalMouseEntity = default;
-            foreach (Chunk chunk in world.Chunks)
+            ReadOnlySpan<Chunk> chunks = world.Chunks;
+            for (int c = 0; c < chunks.Length; c++)
             {
-                Definition definition = chunk.Definition;
-                if (definition.ContainsTag(globalTagType))
+                Chunk chunk = chunks[c];
+                if (chunk.tagTypes.Contains(globalTagType))
                 {
-                    if (definition.ContainsComponent(keyboardType))
+                    if (chunk.componentTypes.Contains(keyboardType))
                     {
                         if (globalKeyboardEntity != default)
                         {
@@ -76,7 +77,7 @@ namespace InputDevices.Systems
                         globalKeyboardEntity = chunk.Entities[0];
                     }
 
-                    if (definition.ContainsComponent(mouseType))
+                    if (chunk.componentTypes.Contains(mouseType))
                     {
                         if (globalMouseEntity != default)
                         {
