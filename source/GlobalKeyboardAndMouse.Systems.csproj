@@ -15,6 +15,7 @@
     <RepositoryUrl>https://github.com/simulation-tree/global-kbm-systems</RepositoryUrl>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <OutDir>bin/$(TargetFramework)/$(Configuration)</OutDir>
+    <PackageId>SimulationTree.GlobalKeyboardAndMouse.Systems</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
