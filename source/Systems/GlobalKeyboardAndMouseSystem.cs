@@ -65,9 +65,9 @@ namespace InputDevices.Systems
             for (int c = 0; c < chunks.Length; c++)
             {
                 Chunk chunk = chunks[c];
-                if (chunk.tagTypes.Contains(globalTagType))
+                if (chunk.TagTypes.Contains(globalTagType))
                 {
-                    if (chunk.componentTypes.Contains(keyboardType))
+                    if (chunk.ComponentTypes.Contains(keyboardType))
                     {
                         if (globalKeyboardEntity != default)
                         {
@@ -77,7 +77,7 @@ namespace InputDevices.Systems
                         globalKeyboardEntity = chunk.Entities[0];
                     }
 
-                    if (chunk.componentTypes.Contains(mouseType))
+                    if (chunk.ComponentTypes.Contains(mouseType))
                     {
                         if (globalMouseEntity != default)
                         {
